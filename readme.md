@@ -1,11 +1,12 @@
 # doubleClickCert
 
-``` javascript
-  <!-- mobile in app -->
+## mobile in-app
+```javascript
+
   <script src="https://s0.2mdn.net/ads/studio/Enabler.js"></script>
   <script>
     //Call isInitialized() before isPageLoaded()
-    // waiting for enabler initilaize
+    // waiting for enabler initialize
     if(!Enabler.isInitialized()) {
       Enabler.addEventListener(
         studio.events.StudioEvent.INIT,
@@ -36,9 +37,9 @@
     </script>
 ```
 
-
+## dektop/mobile browser setup
 ```javascript
-    <!-- dektop/mobile browser setup -->
+
     <script src="https://s0.2mdn.net/ads/studio/Enabler.js"></script>
     <script>
       if (Enabler.isInitialized()) {
@@ -253,6 +254,49 @@ Enabler.getExpandDircetion(); //returns expand direction
 Enabler.getOrientation(); //object representing the orientation of the device.
 Enabler.getUrl(); //Returns runtie URL given the original compile-time filename.
 ```
+
+
+
+
+# Expanding API
+## Expanding Flow
+1. Register event listeners
+2. When you want to expand call ```javascript Enabler.requestExpand()```
+3. When the environment is ready to expand the ```studio.events.StudioEvent.EXPAND_START``` is dispatched.
+4. The Ad optionally performs an animated expansion.
+5. Ad then calls ```Enabler.finishExpand()``` to complete expansion. This makes sure pushdowns are synchronized.
+
+## Collapsing Flow
+1. Register event listeners
+2. When you want to collapse call ```javascript Enabler.requestCollapse()```
+3. When the environment is ready to expand the ```studio.events.StudioEvent.COLLAPSE_START``` is dispatched. This can get dispatched independently of Enabler.requestCollapse() as sometimes the environment provides a close button outside of the creative.
+4. The Ad optionally performs an animated collapse.
+5. Ad then calls ```Enabler.finishCollapse()``` to complete collapse and close div.
+
+### Events: added with an Enabler.addEventListener(...)
+* studio.events.StudioEvent.EXPAND_START
+* studio.events.StudioEvent.EXPAND_FINISH
+* studio.events.StudioEvent.COLLAPSE_START
+* studio.events.StudioEvent.COLLAPSE_FINISH
+
+### Methods: invoked in a function()
+* Enabler.requestExpand()
+* Enabler.finishExpand()
+* Enabler.requestCollapse()
+* Enabler.finishCollapse()
+
+*Always create two units: _Auto_ & _User_ expansion units*
+1. All Expanding or pushdown is _ONE_ Creative with two DIV layer sizes:
+*a)* an initial collapsed and *b)* and expanded size.
+2. The smaller collapsed size fits within a standard ad placement on a website, while the larger size appears to expand outside the collapsed size.
+3. Use our ```Enabler.requestExpand();``` for user-initiated expansion
+4. But for auto-expansion or non-initiated expansion, you have to use our ```Enabler.setStartExpanded();``` so it will not trigger interaction tracking.
+5. Lastly, use ```Enabler.finishExpand();``` to close the HTML DIV back to the collapse size.
+6. During any auto expansion, remember to *stop/delete the timer* (JS native code) to control when the expand state banner should auto-collapse (for example within 7sec.)
+
+
+
+
 
 
 ```javascript
